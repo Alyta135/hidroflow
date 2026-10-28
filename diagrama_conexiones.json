@@ -1,0 +1,129 @@
+{
+  "proyecto": "HidroFlow Gamma",
+  "version": "v0.01.14",
+  "microcontrolador": {
+    "modelo": "ESP32 DevKit V1 (30 o 38 pines)",
+    "voltaje_logico": "3.3V",
+    "puerto_comunicacion_serie_baudios": 115200
+  },
+  "rieles_alimentacion_protoboard": {
+    "riel_positivo": {
+      "origen_esp32": "3.3V",
+      "voltaje": "3.3V DC",
+      "color_cable_sugerido": "Rojo",
+      "descripcion": "Alimenta todos los sensores (DHT11, LDR y Suelo). No usar pin 5V/VIN."
+    },
+    "riel_negativo": {
+      "origen_esp32": "GND",
+      "voltaje": "0V (Tierra común)",
+      "color_cable_sugerido": "Negro o Azul",
+      "descripcion": "Tierra común de referencia para todos los componentes."
+    }
+  },
+  "conexiones_sensores": [
+    {
+      "dispositivo": "DHT11",
+      "tipo": "Sensor Digital de Temperatura y Humedad Ambiental",
+      "pin_definido_en_codigo": "DHTPIN 4",
+      "conexiones": [
+        {
+          "pin_sensor": "VCC / +",
+          "pin_esp32": "3.3V (Riel positivo)",
+          "color_cable_sugerido": "Rojo",
+          "tipo_linea": "Alimentación"
+        },
+        {
+          "pin_sensor": "GND / -",
+          "pin_esp32": "GND (Riel negativo)",
+          "color_cable_sugerido": "Negro",
+          "tipo_linea": "Tierra"
+        },
+        {
+          "pin_sensor": "DATA / OUT / S",
+          "pin_esp32": "GPIO 4",
+          "color_cable_sugerido": "Amarillo",
+          "tipo_linea": "Datos Digitales",
+          "nota": "Si es sensor suelto de 4 patas, requiere resistencia pull-up de 4.7kΩ a 10kΩ entre DATA y 3.3V. Si es módulo de 3 pines, ya la incluye."
+        }
+      ]
+    },
+    {
+      "dispositivo": "LDR (Fotoresistencia)",
+      "tipo": "Sensor Analógico de Luz Solar",
+      "pin_definido_en_codigo": "PIN_LDR 32",
+      "adc_bloque": "ADC1_CH4 (Compatible con Wi-Fi)",
+      "modo_conexion_suelto_2_patas": {
+        "divisor_de_tension": {
+          "resistencia_adicional": "10 kΩ (Marrón-Negro-Naranja)",
+          "paso_1": "Pata 1 del LDR conectada a 3.3V.",
+          "paso_2": "Pata 2 del LDR conectada a nodo común (GPIO 32).",
+          "paso_3": "Un extremo de la resistencia de 10kΩ conectado al nodo común (GPIO 32).",
+          "paso_4": "El otro extremo de la resistencia de 10kΩ conectado a GND."
+        }
+      },
+      "modo_conexion_modulo_3_pines": [
+        {
+          "pin_sensor": "VCC / +",
+          "pin_esp32": "3.3V (Riel positivo)",
+          "color_cable_sugerido": "Rojo",
+          "tipo_linea": "Alimentación"
+        },
+        {
+          "pin_sensor": "GND / -",
+          "pin_esp32": "GND (Riel negativo)",
+          "color_cable_sugerido": "Negro",
+          "tipo_linea": "Tierra"
+        },
+        {
+          "pin_sensor": "AO (Analog Out)",
+          "pin_esp32": "GPIO 32",
+          "color_cable_sugerido": "Verde",
+          "tipo_linea": "Señal Analógica (0 - 3.3V)"
+        }
+      ]
+    },
+    {
+      "dispositivo": "Sensor de Humedad de Suelo (Capacitivo v1.2 / Resistivo)",
+      "tipo": "Sensor Analógico de Humedad de Sustrato",
+      "pin_definido_en_codigo": "PIN_SOIL 34",
+      "adc_bloque": "ADC1_CH6 (Solo entrada, Compatible con Wi-Fi)",
+      "conexiones": [
+        {
+          "pin_sensor": "VCC / +",
+          "pin_esp32": "3.3V (Riel positivo)",
+          "color_cable_sugerido": "Rojo",
+          "tipo_linea": "Alimentación (Nunca usar 5V para proteger el ADC del ESP32)"
+        },
+        {
+          "pin_sensor": "GND / -",
+          "pin_esp32": "GND (Riel negativo)",
+          "color_cable_sugerido": "Negro",
+          "tipo_linea": "Tierra"
+        },
+        {
+          "pin_sensor": "AOUT / AO / SIG",
+          "pin_esp32": "GPIO 34",
+          "color_cable_sugerido": "Azul",
+          "tipo_linea": "Señal Analógica (0 - 3.3V)"
+        }
+      ]
+    }
+  ],
+  "tabla_cableado_rapido": [
+    { "desde": "DHT11 (VCC)", "hacia": "ESP32 (3.3V)", "cable": "Rojo" },
+    { "desde": "DHT11 (GND)", "hacia": "ESP32 (GND)", "cable": "Negro" },
+    { "desde": "DHT11 (DATA)", "hacia": "ESP32 (GPIO 4)", "cable": "Amarillo" },
+    { "desde": "LDR (Pata 1)", "hacia": "ESP32 (3.3V)", "cable": "Rojo" },
+    { "desde": "LDR (Pata 2)", "hacia": "ESP32 (GPIO 32)", "cable": "Verde" },
+    { "desde": "Resistencia 10k (Extremo 1)", "hacia": "ESP32 (GPIO 32)", "cable": "Verde (Nodo común)" },
+    { "desde": "Resistencia 10k (Extremo 2)", "hacia": "ESP32 (GND)", "cable": "Negro" },
+    { "desde": "Sensor Suelo (VCC)", "hacia": "ESP32 (3.3V)", "cable": "Rojo" },
+    { "desde": "Sensor Suelo (GND)", "hacia": "ESP32 (GND)", "cable": "Negro" },
+    { "desde": "Sensor Suelo (AOUT)", "hacia": "ESP32 (GPIO 34)", "cable": "Azul" }
+  ],
+  "advertencias_criticas": [
+    "No alimentar ningún sensor con 5V/VIN; las entradas GPIO del ESP32 toleran máximo 3.3V.",
+    "GPIO 32 y GPIO 34 pertenecen al ADC1. Esto es intencional para permitir lecturas continuas sin interferencias con el módulo Wi-Fi.",
+    "GPIO 34 es un pin exclusivo de entrada (Input Only), ideal para el sensor de suelo."
+  ]
+}
